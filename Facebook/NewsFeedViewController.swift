@@ -19,8 +19,16 @@ class NewsFeedViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet weak var wedding4: UIImageView!
     @IBOutlet weak var wedding5: UIImageView!
     
+    var selectedImageView: UIImageView!
+//    var isPresenting: Bool = true
+//    var interactiveTransition: UIPercentDrivenInteractiveTransition!
+    
+    var lightboxTransition: LightboxTransition!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        lightboxTransition = LightboxTransition()
 
         // Configure the content size of the scroll view
         scrollView.contentSize = CGSizeMake(320, feedView.image!.size.height)
@@ -48,23 +56,19 @@ class NewsFeedViewController: UIViewController, UIGestureRecognizerDelegate {
         scrollView.scrollIndicatorInsets.bottom = 50
     }
     
-    func didTap(gestureRecognizer: UIGestureRecognizer) {
+    func didTap(sender: UIGestureRecognizer) {
+        selectedImageView = sender.view as! UIImageView
         
-        switch (gestureRecognizer.view) {
+        switch (sender.view) {
         case wedding1?:
-            print("wedding1")
             performSegueWithIdentifier("photoDetailSegue", sender: self)
         case wedding2?:
-            print("wedding2")
             performSegueWithIdentifier("photoDetailSegue", sender: self)
         case wedding3?:
-            print("wedding3")
             performSegueWithIdentifier("photoDetailSegue", sender: self)
         case wedding4?:
-            print("wedding4")
             performSegueWithIdentifier("photoDetailSegue", sender: self)
         case wedding5?:
-            print("wedding5")
             performSegueWithIdentifier("photoDetailSegue", sender: self)
         default:
             print("error")
@@ -72,8 +76,12 @@ class NewsFeedViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        var destinationViewController = segue.destinationViewController as! PhotoViewController
-        
-        destinationViewController.image = self.wedding1.image
+        if segue.identifier == "photoDetailSegue" {
+            let destinationViewController = segue.destinationViewController as! PhotoViewController
+            destinationViewController.modalPresentationStyle = UIModalPresentationStyle.Custom
+            destinationViewController.transitioningDelegate = lightboxTransition
+            destinationViewController.image = self.selectedImageView.image
+        }
     }
+    
 }
